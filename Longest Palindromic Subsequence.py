@@ -3,6 +3,9 @@
 
 
 def LPSubsequence(a):
+    if a is None or len(a) == 0:
+        return ""
+
     sl = len(a)     # sl is string length
 
     # Create a table to store results of subproblems
@@ -12,10 +15,6 @@ def LPSubsequence(a):
     for i in range(sl):
         L[i][i] = a[i]
 
-    # Build the table. Note that the starter diagonal values of table are
-    # useless and not filled in the process. The values are filled in a
-    # manner similar to Matrix Chain Multiplication DP solution (See
-    # http://www.geeksforgeeks.org/dynamic-programming-set-8-matrix-chain-multiplication/
     # cl is check string length
     for cl in range(2, sl + 1):
         for start in range(sl - cl + 1):
@@ -37,6 +36,10 @@ def LPSubsequenceHelper(string1, string2):
     else:
         return string2
 
+
 print LPSubsequence('dd')
 print LPSubsequence('dald')
-
+print LPSubsequence('')
+print LPSubsequence(None)
+print LPSubsequence('ajsrdvv')
+print LPSubsequence('ajsrdvp')
