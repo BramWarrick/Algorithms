@@ -1,5 +1,8 @@
 
 def LPSubstring(str):
+    """
+    Return the longest contiguous palindrome within input string
+    """
     if str is None or str == '':
         return ''
 
@@ -13,6 +16,7 @@ def LPSubstring(str):
     stop = 0
 
     for index in xrange(1, n):
+        # Even number palindrome validations
         start = index - 1
         stop = index
 
@@ -23,6 +27,7 @@ def LPSubstring(str):
             start -= 1
             stop += 1
 
+        # Odd number palindrom validations
         start = index - 1
         stop = index + 1
 
