@@ -1,8 +1,11 @@
-# A Dynamic Programming based Python program for LPS problem
-# Returns the length of the longest palindromic subsequence in seq
-
-
 def LPSubsequence(a):
+    """
+    Returns the longest palindromic subsequence within the input string
+
+    This can be the result of dropping characters to achieve the longest palindrome
+    (e.g. `abdgda` will yield a result of `adgda` because dropping the `b` allows 
+    for the longest palindrome.)
+    """
     if a is None or len(a) == 0:
         return ""
 
@@ -24,17 +27,30 @@ def LPSubsequence(a):
             elif a[start] == a[stop]:
                 L[start][stop] = a[start] + L[start + 1][stop - 1] + a[stop]
             else:
-                L[start][stop] = LPSubsequenceHelper(
+                L[start][stop] = LPSubsequenceLongest(
                     L[start][stop - 1], L[start + 1][stop])
 
     return L[0][sl - 1]
 
 
-def LPSubsequenceHelper(string1, string2):
+def LPSubsequenceLongest(string1, string2):
     if len(string1) >= len(string2):
         return string1
     else:
         return string2
+
+
+def LPSubsequenceLength(str):
+    """
+    Returns the length of the longest palindromic subsequence within 
+    the input string.
+
+    This can be the result of dropping characters to achieve the longest 
+    palindrome (e.g. `abdgda` will yield a palindrome of `adgda` because 
+    dropping the `b` allows for the longest palindrome, resulting in a 
+    returned value of 5.)
+    """
+    return len(LPSubsequence(str))
 
 
 print LPSubsequence('dd')
@@ -43,3 +59,5 @@ print LPSubsequence('')
 print LPSubsequence(None)
 print LPSubsequence('ajsrdvv')
 print LPSubsequence('ajsrdvp')
+
+print LPSubsequenceLength('level')
