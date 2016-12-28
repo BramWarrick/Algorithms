@@ -1,10 +1,12 @@
 
-def LPSubstring(a):
-    if a is None or a == '':
+def LPSubstring(str):
+    if str is None or str == '':
         return ''
 
+    str = str.lower()
+
     maxPalLength = 1
-    n = len(a)
+    n = len(str)
     palPosStart = 0
 
     start = 0
@@ -14,7 +16,7 @@ def LPSubstring(a):
         start = index - 1
         stop = index
 
-        while start >= 0 and stop < n and a[start] == a[stop]:
+        while start >= 0 and stop < n and str[start] == str[stop]:
             if stop - start + 1 > maxPalLength:
                 palPosStart = start
                 maxPalLength = stop - start + 1
@@ -24,13 +26,13 @@ def LPSubstring(a):
         start = index - 1
         stop = index + 1
 
-        while start >= 0 and stop < n and a[start] == a[stop]:
+        while start >= 0 and stop < n and str[start] == str[stop]:
             if stop - start + 1 > maxPalLength:
                 palPosStart = start
                 maxPalLength = stop - start + 1
             start -= 1
             stop += 1
-    return a[palPosStart:(palPosStart + maxPalLength)]
+    return str[palPosStart:(palPosStart + maxPalLength)]
 
 
 print LPSubstring('davad')
