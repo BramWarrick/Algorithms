@@ -5,26 +5,30 @@ def question4(T, r, n1, n2):
         low, high = n2, n1
     else:
         low, high = n1, n2
-    # r != n1 and n2; set current_val and initialize previous_val to `r`
-    current_val, previous_val = r, r
+    # r != n1 or n2, set current_val and initialize previous_val to `r`
+    current_val = r
+    previous_val = r
     child_left, child_right = question4_return_children(T, current_val)
     while True:
+        # print "current_val, child_left, child_right = " + str(current_val) + ", " + str(child_left) + ", " + str(child_right)
+        # print "low, high = " + str(low) + ", " + str(high)
         if child_left is None and child_right is None:
-            # One or more of the nodes don't exist in the tree; end of branch
+            # One or more of the nodes don't exist in the tree; fail
             return None
         if low < current_val and current_val < high:
-            # Current node is branching point for targeted nodes; LCA
+            # current node is branching point for targeted nodes
             return current_val
         if low == current_val or high == current_val:
-            # Current node is one of the requested nodes; previous node is LCA
+            # Current node is one of the requested nodes; return previous node
             return previous_val
         if high < current_val:
-            # `high` is less than current node; follow left branch
+            # high is less than current node or right branch doesn't exist
+            # Continue down left side
             previous_val = current_val
             current_val = child_left
             child_left, child_right = question4_return_children(T, current_val)
         if low > current_val:
-            # `low` is greater than current node; follow right branch
+            # print "low > current_val or child_left is None"
             previous_val = current_val
             current_val = child_right
             child_left, child_right = question4_return_children(T, current_val)
@@ -157,40 +161,3 @@ print question4([[0, 0, 1, 0, 0, 0, 0],
                 1,
                 None)
 print "Expected output: None"
-
-# Question 4 Commentary - O(nlogn)
-
-# Efficiency:
-# O(log(n))
-
-# Efficiency Design:
-# Throughout the process, nodes are only visited in order to return their value
-# or traversed on the way to the next node for evaluation. Results are returned
-# immediately and without recursion.
-
-
-# Memory
-# O(1)
-# - I created a few variables that remain constant in their memory utilization
-# across the run of the algorithm and any size of tree. 
-# - I could remove `low` and `high` but I added those for improved readability.
-# This could be accompished with a `n1`, `n2`swap where `n1` would be forced
-# to be `low` and `n2` as `high`.
-
-# Process:
-# - I start with the root and progressively target descendants based on 
-# greater/less than evaluations. Once I find:
-#     - Lowest node value is less than current node & highest is greater
-#     - Current node value equals the low or high node's value; return previous
-# If that condition is never met, eventually the helper function will return 
-# None, None and the core function will return None due to an end of 
-# branch/tree. This means one of the nodes was not in the tree.
-# With the tree built, I find each of the target nodes, building an `ancestor`
-# list for each. After these lists are returned, I loop through them, starting
-# at the back, until a shared ancestor is found. I work backwards on one list,
-# then the second - which you can see with the nested `for` loop.
-
-# Addt'l Note:
-# I took the definition of 'ancestor' literally, so any search for the root
-# value will result in `None`. No value can be its own ancestor (i.e. searching
-# for a parent and child, will return the parent's parent).
