@@ -35,7 +35,7 @@ class BinarySearchTree:
                         current = current.rightChild
 
     def delete(self, val):
-        parent, child_direction, target = get_parent_and_target(val)
+        parent, child_direction, target = self.get_parent_and_target(val)
         # is root
         if parent is None:
             # TODO
@@ -58,18 +58,18 @@ class BinarySearchTree:
                 parent.leftChild = target.leftChild
             else:				# 'right'
                 parent.rightChild = target.leftChild
-        # if both children present; find next lowest value & substitute
+        # if both children present; find next highest value that is less than 
+        # target.data and substitute the value
+        # Set low value's ancestor's left child to low val's right child
         else:
-        	# TODO Handle if substitute has right child
-            sub_parent, substitute = get_next_highest(target)
+            # Next lowest value will not have a left child, logically
+            sub_parent, substitute = self.get_next_highest(target)
             if child_direction == 'left':
                 parent.leftChild.data = substitute.data
-                sub_parent.leftChild = None
+                sub_parent.leftChild = substitute.rightChild
             else:				# 'right'
                 parent.rightChild.data = substitute.data
-                sub_parent.leftChild = None
-        # 	Next lowest value will be a leaf, logically
-        pass
+                sub_parent.leftChild = substitute.rightChild
 
     def get_next_highest(self, target):
         current = target
