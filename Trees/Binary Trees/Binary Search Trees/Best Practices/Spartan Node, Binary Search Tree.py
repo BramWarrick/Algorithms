@@ -35,43 +35,43 @@ class BinarySearchTree:
                         current = current.rightChild
 
     def delete(self, val):
-        parent, child_direction, target = self.get_parent_and_target(val)
+        del_parent, del_child_dir, del_target = self.get_parent_and_target(val)
         # is root
-        if parent is None:
+        if del_parent is None:
             # TODO
             pass
         # if target is leaf; delete target from parent
-        if target.is_leaf:
-            if child_direction == 'left':
-                parent.leftChild = None
+        if del_target.is_leaf:
+            if del_child_dir == 'left':
+                del_parent.leftChild = None
             else:				# 'right'
-                parent.rightChild = None
+                del_parent.rightChild = None
 
         # if target has no left child; shift target's right child up
-        elif target.has_leftChild is False:
-            if child_direction == 'left':
-                parent.leftChild = target.rightChild
+        elif del_target.has_leftChild is False:
+            if del_child_dir == 'left':
+                del_parent.leftChild = del_target.rightChild
             else:				# 'right'
-                parent.rightChild = target.rightChild
+                del_parent.rightChild = del_target.rightChild
 
         # if target has no right child; shift target's left side up
-        elif target.has_rightChild is False:
-            if child_direction == 'left':
-                parent.leftChild = target.leftChild
+        elif del_target.has_rightChild is False:
+            if del_child_dir == 'left':
+                del_parent.leftChild = del_target.leftChild
             else:				# 'right'
-                parent.rightChild = target.leftChild
+                del_parent.rightChild = del_target.leftChild
 
         # Both children present; find next highest value that is less than
         # target.data and substitute the value
         else:
             # Next lowest value will not have a left child
-            subst_parent, substitute = self.get_next_highest(target)
-            if child_direction == 'left':
+            subst_parent, substitute = self.get_next_highest(del_target)
+            if del_child_dir == 'left':
                 # Node to be deleted is left child of parent
-                parent.leftChild.data = substitute.data
+                del_parent.leftChild.data = substitute.data
             else:				# 'right'
                 # Node to be deleted is right child of parent
-                parent.rightChild.data = substitute.data
+                del_parent.rightChild.data = substitute.data
             # Update parent of node used for substitution
             # Because get_next_highest always returns the leftChild for
             # substitution the second substitution will always be on
