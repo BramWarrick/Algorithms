@@ -46,43 +46,49 @@ class BinarySearchTree:
                 parent.leftChild = None
             else:				# 'right'
                 parent.rightChild = None
+
         # if target has no left child; shift target's right child up
         elif target.has_leftChild is False:
             if child_direction == 'left':
                 parent.leftChild = target.rightChild
             else:				# 'right'
                 parent.rightChild = target.rightChild
+
         # if target has no right child; shift target's left side up
         elif target.has_rightChild is False:
             if child_direction == 'left':
                 parent.leftChild = target.leftChild
             else:				# 'right'
                 parent.rightChild = target.leftChild
-        # if both children present; find next highest value that is less than
+
+        # Both children present; find next highest value that is less than
         # target.data and substitute the value
-        # Set low value's ancestor's left child to low val's right child
         else:
             # Next lowest value will not have a left child
-            sub_parent, substitute = self.get_next_highest(target)
+            subst_parent, substitute = self.get_next_highest(target)
             if child_direction == 'left':
+                # Node to be deleted is left child of parent
                 parent.leftChild.data = substitute.data
-                sub_parent.leftChild = substitute.rightChild
             else:				# 'right'
+                # Node to be deleted is right child of parent
                 parent.rightChild.data = substitute.data
-                sub_parent.leftChild = substitute.rightChild
+            # Update parent of node used for substitution
+            # Because get_next_highest always returns the leftChild for
+            # substitution the second substitution will always be on
+            # subst_parent's leftChild
+            subst_parent.leftChild = substitute.rightChild
 
     def get_next_highest(self, target):
         current = target
-        # Find correct node for descent to furthest left node
-        if not current.has_leftChild and not current.has_rightChild:
-        	# is leaf
+        # Prep/Handle instances without a leftChild
+        if current.is_leaf:
             return None, None
-        elif not current.has_leftChild and current.has_rightChild:
-        	# Only has rightChild; step to that node
+        # Only has rightChild; step to that node
+        if not current.has_leftChild:
             parent = current
             current = current.rightChild
 
-        # Descend to furthest left node; lowest value greater than target
+        # Descend to furthest left node; highest value less than target
         while current.has_leftChild:
             parent = current
             current = current.leftChild
@@ -104,7 +110,7 @@ class BinarySearchTree:
                     else:
                         parent = current
                         current = current.leftChild
-                else: # val > current.data
+                else:  # val > current.data
                     if current.rightChild is None:
                         return parent, 'right', current
                     else:
