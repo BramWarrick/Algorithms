@@ -58,11 +58,11 @@ class BinarySearchTree:
                 parent.leftChild = target.leftChild
             else:				# 'right'
                 parent.rightChild = target.leftChild
-        # if both children present; find next highest value that is less than 
+        # if both children present; find next highest value that is less than
         # target.data and substitute the value
         # Set low value's ancestor's left child to low val's right child
         else:
-            # Next lowest value will not have a left child, logically
+            # Next lowest value will not have a left child
             sub_parent, substitute = self.get_next_highest(target)
             if child_direction == 'left':
                 parent.leftChild.data = substitute.data
@@ -73,9 +73,20 @@ class BinarySearchTree:
 
     def get_next_highest(self, target):
         current = target
+        # Find correct node for descent to furthest left node
+        if not current.has_leftChild and not current.has_rightChild:
+        	# is leaf
+            return None, None
+        elif not current.has_leftChild and current.has_rightChild:
+        	# Only has rightChild; step to that node
+            parent = current
+            current = current.rightChild
+
+        # Descend to furthest left node; lowest value greater than target
         while current.has_leftChild:
             parent = current
             current = current.leftChild
+
         return parent, current
 
     def get_parent_and_target(self, val):
@@ -89,13 +100,13 @@ class BinarySearchTree:
                     return parent, current
                 elif val < current.data:
                     if current.leftChild is None:
-                        return parent, '<', current
+                        return parent, 'left', current
                     else:
                         parent = current
                         current = current.leftChild
-                else:
+                else: # val > current.data
                     if current.rightChild is None:
-                        return parent, '>', current
+                        return parent, 'right', current
                     else:
                         parent = current
                         current = current.rightChild
