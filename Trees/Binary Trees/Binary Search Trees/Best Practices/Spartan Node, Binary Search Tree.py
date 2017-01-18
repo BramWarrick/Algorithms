@@ -20,139 +20,222 @@ class BinarySearchTree:
                 if val == current.data:
                     return
                 elif val < current.data:
-                    if current.lefchild is None:
-                        current.leftChild = Node(val)
+                    if current.left is None:
+                        current.left = Node(val)
                         self.size += 1
                         return
                     else:
-                        current = current.leftChild
+                        current = current.left
                 else:
-                    if current.rightChild is None:
-                        current.rightChild = Node(val)
+                    if current.right is None:
+                        current.right = Node(val)
                         self.size += 1
                         return
                     else:
-                        current = current.rightChild
+                        current = current.right
 
     def delete(self, val):
-        del_parent, del_child_dir, del_target = self.get_parent_and_target(val)
+        del_parent, del_child_dir, del_target = self._get_target_anc_dtls(val)
+        # Value for deletion not present
+        if del_target is None:
+            return
         # is root
-        if del_parent is None:
-            # TODO
-            pass
+        if self.root.data == del_target.data:
+            self._splice(self.root, del_child_dir, del_target, val)
+        else:
+            self._splice(del_parent, del_child_dir, del_target, val)
+
+    def _splice(self, del_parent, del_child_dir, del_target, val):
         # if target is leaf; delete target from parent
-        if del_target.is_leaf:
-            if del_child_dir == 'left':
-                del_parent.leftChild = None
-            else:				# 'right'
-                del_parent.rightChild = None
+        if del_target.is_leaf():
+            self._update_del_parent(del_child_dir, del_parent, None)
 
         # if target has no left child; shift target's right child up
-        elif del_target.has_leftChild is False:
-            if del_child_dir == 'left':
-                del_parent.leftChild = del_target.rightChild
-            else:				# 'right'
-                del_parent.rightChild = del_target.rightChild
+        elif del_target.has_left is False:
+            self._update_del_parent(
+                del_child_dir, del_parent, del_target.right)
 
         # if target has no right child; shift target's left side up
-        elif del_target.has_rightChild is False:
-            if del_child_dir == 'left':
-                del_parent.leftChild = del_target.leftChild
-            else:				# 'right'
-                del_parent.rightChild = del_target.leftChild
+        elif del_target.has_right is False:
+            self._update_del_parent(del_child_dir, del_parent, del_target.left)
 
         # Both children present; find next highest value that is less than
         # target.data and substitute the value
         else:
-            # Next lowest value will not have a left child
-            subst_parent, substitute = self.get_next_highest(del_target)
-            if del_child_dir == 'left':
-                # Node to be deleted is left child of parent
-                del_parent.leftChild.data = substitute.data
-            else:				# 'right'
-                # Node to be deleted is right child of parent
-                del_parent.rightChild.data = substitute.data
+            # Next highest value will not have a left child
+            subst_parent, substitute = self._get_next_highest_below(del_target)
+            del_target.data = substitute.data
+            del_target.left = substitute.left
+            # subst_parent.right = None
+
             # Update parent of node used for substitution
-            # Because get_next_highest always returns the leftChild for
+            # Because get_next_highest always returns the left for
             # substitution the second substitution will always be on
-            # subst_parent's leftChild
-            subst_parent.leftChild = substitute.rightChild
+            # subst_parent's left
+            # subst_parent.left = substitute.right
+            self.size -= 1
 
-    def get_next_highest(self, target):
+    def _update_del_parent(self, del_child_dir, del_parent, new_val):
+        # direction of `None` designates root value
+        if new_val is not None:
+        	new_val = new_val.data
+        if del_child_dir is None:
+            self.root = new_val
+        elif del_child_dir == 'left':
+            del_parent.left = new_val
+        else:				# 'right'
+            del_parent.right = new_val
+        self.size -= 1
+
+    def _get_next_highest_below(self, target):
         current = target
-        # Prep/Handle instances without a leftChild
-        if current.is_leaf:
-            return None, None
-        # Only has rightChild; step to that node
-        if not current.has_leftChild:
-            parent = current
-            current = current.rightChild
-
-        # Descend to furthest left node; highest value less than target
-        while current.has_leftChild:
-            parent = current
-            current = current.leftChild
+        parent, current = current, current.left
+        # Descend to furthest right node; highest value less than target
+        while current.has_right():
+            parent, current = current, current.right
 
         return parent, current
 
-    def get_parent_and_target(self, val):
+    def _get_target_anc_dtls(self, val):
         if self.root.data == val:
-            return None, self.root
+            return None, None, self.root
         else:
             current = self.root
             parent = None
+            dirn = None
             while True:
                 if val == current.data:
-                    return parent, current
+                    return parent, dirn, current
                 elif val < current.data:
-                    if current.leftChild is None:
-                        return parent, 'left', current
+                    if current.left is None:
+                        return None, None, None
                     else:
-                        parent = current
-                        current = current.leftChild
+                        parent, dirn, current = current, 'left', current.left
+                        dirn = 'left'
                 else:  # val > current.data
-                    if current.rightChild is None:
-                        return parent, 'right', current
+                    if current.right is None:
+                        return None, None, None
                     else:
-                        parent = current
-                        current = current.rightChild
+                        parent, dirn, current = current, 'right', current.right
+
+    # Iterative function for inorder tree traversal
+    def inOrder(self):
+
+        # Set current to root of binary tree
+        current = self.root
+        s = []  # initialze stack
+        done = 0
+
+        while(not done):
+
+            # Reach the left most Node of the current Node
+            if current is not None:
+
+                # Place pointer to a tree node on the stack
+                # before traversing the node's left subtree
+                s.append(current)
+
+                current = current.left
+
+            # BackTrack from the empty subtree and visit the Node
+            # at the top of the stack; however, if the stack is
+            # empty you are done
+            else:
+                if(len(s) > 0):
+                    current = s.pop()
+                    print current.data,
+
+                    # We have visited the node and its left
+                    # subtree. Now, it's right subtree's turn
+                    current = current.right
+
+                else:
+                    done = 1
+
+	# This code is contributed by Nikhil Kumar Singh(nickzuck_007)
 
 
 class Node:
     def __init__(self, val, left=None, right=None):
         self.data = val
-        self.leftChild = left
-        self.rightChild = right
+        self.left = left
+        self.right = right
 
-    def is_leaf(self, node):
-        if node.rightChild is not None or node.leftChild is not None:
-            return False
-        else:
-            return True
-
-    def has_children(self, node):
-        if node.rightChild is not None and node.leftChild is not None:
+    def is_leaf(self):
+        if self.right is None and self.left is None:
             return True
         else:
             return False
 
-    def has_leftChild(self, node):
-        if node.leftChild is not None:
+    def has_children(self):
+        if self.right is not None and self.left is not None:
             return True
         else:
             return False
 
-    def has_rightChild(self, node):
-        if node.rightChild is not None:
+    def has_left(self):
+        if self.left is not None:
             return True
         else:
             return False
+
+    def has_right(self):
+        if self.right is not None:
+            return True
+        else:
+            return False
+
+    # def is_val(self, val):
 
 
 t = BinarySearchTree()
-t.insert(4)
 t.insert(5)
-print t.root.data  # this works
+t.insert(11)
+t.insert(4)
+t.insert(35)
+t.insert(3)
+t.insert(5)
+t.insert(19)
+t.insert(-2)
+t.insert(0)
+t.insert(7)
+t.insert(9)
+t.insert(3)
+t.insert(2)
+t.insert(1)
+t.insert(6)
+t.insert(8)
+t.insert(12)
+print t.root.data
 print t.size
-print t.root.rightChild.data
-# print t.root.rchild.data #this works too
+print t.root.right.data
+print t.root.right.right.data
+parent, direction, target = t._get_target_anc_dtls(8)
+print parent.data
+print direction
+print target.data
+print target.left
+print target.right
+print t.inOrder()
+t.delete(8)
+print t.inOrder()
+print t.root.data
+print t.root.left.data
+print t.root.right.data
+t.delete(3)
+print t.inOrder()
+t.delete(5)
+print t.root.data
+print t.root.left.data
+print t.root.right.data
+print t.inOrder()
+parent, direction, target = t._get_target_anc_dtls(8)
+print parent
+print target
+parent, direction, target = t._get_target_anc_dtls(7)
+print parent.data
+print direction
+print target.data
+subst_parent, subst = t._get_next_highest_below(target)
+print subst_parent.data
+print subst.data
