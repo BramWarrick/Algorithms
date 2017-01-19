@@ -35,6 +35,14 @@ class BinarySearchTree:
                         current = current.right
 
     def delete(self, val):
+        """
+        Finds node for `val` and deletes node. If value is not present, tree is
+        unchanged.
+
+        Argument:
+        val - value to be deleted from binary search tree.
+        """
+
         del_parent, del_child_dir, del_target = self._get_target_anc_dtls(val)
         # Value for deletion not present
         if del_target is None:
@@ -45,7 +53,18 @@ class BinarySearchTree:
         else:
             self._splice(del_parent, del_child_dir, del_target, val)
 
-    def _splice(self, del_parent, del_child_dir, del_target, val):
+    def _splice(self, del_parent, del_child_dir, del_target):
+        """
+        Splices the child values from del_target and adds them correctly
+        to del_target's parent (del_parent).
+
+        Arguments:
+        del_parent - Node; parent of node to be deleted
+        del_child_dir - location del_target can be found on del_parent.
+            Can be 'left', 'right' or None (when node is the tree's root).
+        del_target - Node; to be deleted
+        """
+
         # if target is leaf; delete target from parent
         if del_target.is_leaf():
             self._update_del_parent(del_child_dir, del_parent, None)
@@ -69,6 +88,16 @@ class BinarySearchTree:
             self.size -= 1
 
     def _update_del_parent(self, del_child_dir, del_parent, new_val):
+        """
+        Helper function - updates parent of deleted node.
+
+        Arguments:
+        del_child_dir - location of deleted node on del_parent
+            Can be 'left', 'right' or None (when node is the tree's root).
+        del_parent - Node, parent of deleted node
+        new_val - new value to be assigned based on direction
+        """
+
         # direction of `None` means child is root
         if new_val is not None:
             new_val = new_val.data
@@ -81,6 +110,18 @@ class BinarySearchTree:
         self.size -= 1
 
     def _get_next_highest_below(self, target):
+        """
+        Returns the highest value in the tree that is less than `target` and
+        its parent. This should never be called on a leaf.
+
+        Argument:
+        target - Node who's value will be used in search
+
+        Returns:
+        parent - the parent node of the next highest value
+        current - the node with the next highest value
+        """
+
         current = target
         parent, current = current, current.left
         # Descend to furthest right node; highest value less than target
@@ -113,6 +154,9 @@ class BinarySearchTree:
 
     # Iterative function for inorder tree traversal
     def inOrder(self):
+    	"""
+    	Prints data values from Binary Search Tree in ascending order.
+    	"""
 
         # Set current to root of binary tree
         current = self.root
@@ -149,9 +193,11 @@ class BinarySearchTree:
     # http://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/
 
     def balance_root(self):
+    	"""Balances tree at root. Does not radiate out."""
         self.balance_node(self.root)
 
     def balance_tree(self):
+    	"""Balances tree beginning at bottom, left, working back up."""
         current = self.root
         s = []  # initialze stack
         done = 0
@@ -185,6 +231,7 @@ class BinarySearchTree:
                     done = 1
 
     def balance_node(self, node):
+    	"""Balances the subtree under `node`."""
         current = node
         factor = self._left_height(current) - self._right_height(current)
         print "factor: " + str(factor)
@@ -210,6 +257,8 @@ class BinarySearchTree:
         if direction == 'left':
             newRoot = node.right
             node.right = newRoot.left
+            if not is_root_node:
+                if dirn == 'left':
         else:
             newRoot = node.left
             node.left = newRoot.right
@@ -269,8 +318,6 @@ class Node:
             return True
         else:
             return False
-
-    # def is_val(self, val):
 
 
 t = BinarySearchTree()
