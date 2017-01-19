@@ -49,9 +49,9 @@ class BinarySearchTree:
             return
         # is root
         if self.root.data == del_target.data:
-            self._splice(self.root, del_child_dir, del_target, val)
+            self._splice(self.root, del_child_dir, del_target)
         else:
-            self._splice(del_parent, del_child_dir, del_target, val)
+            self._splice(del_parent, del_child_dir, del_target)
 
     def _splice(self, del_parent, del_child_dir, del_target):
         """
@@ -154,9 +154,9 @@ class BinarySearchTree:
 
     # Iterative function for inorder tree traversal
     def inOrder(self):
-    	"""
-    	Prints data values from Binary Search Tree in ascending order.
-    	"""
+        """
+        Prints data values from Binary Search Tree in ascending order.
+        """
 
         # Set current to root of binary tree
         current = self.root
@@ -193,11 +193,11 @@ class BinarySearchTree:
     # http://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/
 
     def balance_root(self):
-    	"""Balances tree at root. Does not radiate out."""
+        """Balances tree at root. Does not radiate out."""
         self.balance_node(self.root)
 
     def balance_tree(self):
-    	"""Balances tree beginning at bottom, left, working back up."""
+        """Balances tree beginning at bottom, left, working back up."""
         current = self.root
         s = []  # initialze stack
         done = 0
@@ -231,7 +231,7 @@ class BinarySearchTree:
                     done = 1
 
     def balance_node(self, node):
-    	"""Balances the subtree under `node`."""
+        """Balances the subtree under `node`."""
         current = node
         factor = self._left_height(current) - self._right_height(current)
         print "factor: " + str(factor)
@@ -257,8 +257,6 @@ class BinarySearchTree:
         if direction == 'left':
             newRoot = node.right
             node.right = newRoot.left
-            if not is_root_node:
-                if dirn == 'left':
         else:
             newRoot = node.left
             node.left = newRoot.right
