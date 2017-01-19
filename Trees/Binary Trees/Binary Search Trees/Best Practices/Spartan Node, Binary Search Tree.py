@@ -79,12 +79,12 @@ class BinarySearchTree:
             self._update_del_parent(del_child_dir, del_parent, del_target.left)
 
         # Both children present; find next highest value that is less than
-        # target.data and substitute the value
+        # target.data, then substitute the value
         else:
             # Next highest value will not have a right child
             subst_parent, substitute = self._get_next_highest_below(del_target)
             del_target.data = substitute.data
-            del_target.left = substitute.left
+            subst_parent.right = substitute.left
             self.size -= 1
 
     def _update_del_parent(self, del_child_dir, del_parent, new_val):
@@ -234,32 +234,29 @@ class BinarySearchTree:
         """Balances the subtree under `node`."""
         current = node
         factor = self._left_height(current) - self._right_height(current)
-        print "factor: " + str(factor)
         while factor < -1 or factor > 1:
-            print "factor: " + str(factor)
-            print "current: " + str(current.data)
-            print self.inOrder()
             if factor < -1:
-                self._rotate(current, 'right')
+                self._rotate(current, 'ccw') 	# counter clockwise
                 current = current.right
                 factor += 1
             elif factor > 1:
-                self._rotate(current, 'left')
+                self._rotate(current, 'cw')		# clockwise
                 current = current.left
                 factor -= 1
 
-    def _rotate(self, node, direction):
+    def _rotate(self, node, rotDir):
         is_root_node = False
         if node == self.root:
             is_root_node = True
-        print is_root_node
         parent, dirn, target = self._get_target_anc_dtls(node.data)
-        if direction == 'left':
+        if rotDir == 'ccw':
             newRoot = node.right
             node.right = newRoot.left
+            newRoot.left = node
         else:
             newRoot = node.left
             node.left = newRoot.right
+            newRoot.right = node
         # If pivotal node is tree's root, update root value
         if is_root_node:
             print "yes"
@@ -269,6 +266,7 @@ class BinarySearchTree:
                 parent.left = newRoot
             elif dirn == 'right':
                 parent.right = newRoot
+            print parent.right.data
 
     def _left_height(self, node):
         height = 0
@@ -382,9 +380,15 @@ print t.inOrder()
 t.insert(5)
 print 'Added 5'
 print t.inOrder()
+print "Begin t.root.left balancing"
+print t.root.left.data
 t.balance_node(t.root.left)
+print t.root.left.data
 print t.inOrder()
+print "Begin t.root.right balancing"
+print t.root.right.data
 t.balance_node(t.root.right)
+print t.root.right.data
 print t.inOrder()
 print t.root.data
 t.balance_root()
