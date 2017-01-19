@@ -62,28 +62,21 @@ class BinarySearchTree:
         # Both children present; find next highest value that is less than
         # target.data and substitute the value
         else:
-            # Next highest value will not have a left child
+            # Next highest value will not have a right child
             subst_parent, substitute = self._get_next_highest_below(del_target)
             del_target.data = substitute.data
             del_target.left = substitute.left
-            # subst_parent.right = None
-
-            # Update parent of node used for substitution
-            # Because get_next_highest always returns the left for
-            # substitution the second substitution will always be on
-            # subst_parent's left
-            # subst_parent.left = substitute.right
             self.size -= 1
 
     def _update_del_parent(self, del_child_dir, del_parent, new_val):
-        # direction of `None` designates root value
+        # direction of `None` means child is root
         if new_val is not None:
-        	new_val = new_val.data
+            new_val = new_val.data
         if del_child_dir is None:
             self.root = new_val
         elif del_child_dir == 'left':
             del_parent.left = new_val
-        else:				# 'right'
+        else:                # 'right'
             del_parent.right = new_val
         self.size -= 1
 
@@ -152,7 +145,99 @@ class BinarySearchTree:
                 else:
                     done = 1
 
-	# This code is contributed by Nikhil Kumar Singh(nickzuck_007)
+    # This code is contributed by Nikhil Kumar Singh(nickzuck_007)
+    # http://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/
+
+    def balance_root(self):
+        self.balance_node(self.root)
+
+    def balance_tree(self):
+        current = self.root
+        s = []  # initialze stack
+        done = 0
+
+        while(not done):
+
+            # Reach the left most Node of the current Node
+            if current is not None:
+
+                # Place pointer to a tree node on the stack
+                # before traversing the node's left subtree
+                s.append(current)
+
+                current = current.left
+
+            # BackTrack from the empty subtree and visit the Node
+            # at the top of the stack; however, if the stack is
+            # empty you are done
+            else:
+                if(len(s) > 0):
+                    current = s.pop()
+                    if current.has_children() and current != self.root:
+                        self.balance_node(current)
+
+                    # We have visited the node and its left
+                    # subtree. Now, it's right subtree's turn
+                    current = current.right
+
+                else:
+                    self.balance_node(self.root)
+                    done = 1
+
+    def balance_node(self, node):
+        current = node
+        factor = self._left_height(current) - self._right_height(current)
+        print "factor: " + str(factor)
+        while factor < -1 or factor > 1:
+            print "factor: " + str(factor)
+            print "current: " + str(current.data)
+            print self.inOrder()
+            if factor < -1:
+                self._rotate(current, 'right')
+                current = current.right
+                factor += 1
+            elif factor > 1:
+                self._rotate(current, 'left')
+                current = current.left
+                factor -= 1
+
+    def _rotate(self, node, direction):
+        is_root_node = False
+        if node == self.root:
+            is_root_node = True
+        print is_root_node
+        parent, dirn, target = self._get_target_anc_dtls(node.data)
+        if direction == 'left':
+            newRoot = node.right
+            node.right = newRoot.left
+        else:
+            newRoot = node.left
+            node.left = newRoot.right
+        # If pivotal node is tree's root, update root value
+        if is_root_node:
+            print "yes"
+            self.root = newRoot
+        else:
+            if dirn == 'left':
+                parent.left = newRoot
+            elif dirn == 'right':
+                parent.right = newRoot
+
+    def _left_height(self, node):
+        height = 0
+        current = node
+        while current.has_left():
+            height += 1
+            current = current.left
+        return height
+
+    def _right_height(self, node):
+        height = 0
+        current = node
+        while current.has_right():
+            height += 1
+            current = current.right
+        return height
 
 
 class Node:
@@ -206,6 +291,7 @@ t.insert(1)
 t.insert(6)
 t.insert(8)
 t.insert(12)
+print t.inOrder()
 print t.root.data
 print t.size
 print t.root.right.data
@@ -218,13 +304,16 @@ print target.left
 print target.right
 print t.inOrder()
 t.delete(8)
+print 'Deleted 8 - leaf'
 print t.inOrder()
 print t.root.data
 print t.root.left.data
 print t.root.right.data
 t.delete(3)
+print 'Deleted 3 - two branches'
 print t.inOrder()
 t.delete(5)
+print 'Deleted 5 - root'
 print t.root.data
 print t.root.left.data
 print t.root.right.data
@@ -239,3 +328,20 @@ print target.data
 subst_parent, subst = t._get_next_highest_below(target)
 print subst_parent.data
 print subst.data
+t.insert(3)
+print 'Added 3'
+print t.inOrder()
+t.insert(8)
+print 'Added 8'
+print t.inOrder()
+t.insert(5)
+print 'Added 5'
+print t.inOrder()
+t.balance_node(t.root.left)
+print t.inOrder()
+t.balance_node(t.root.right)
+print t.inOrder()
+print t.root.data
+t.balance_root()
+print t.inOrder()
+print t.root.data
