@@ -47,9 +47,10 @@ class BinarySearchTree:
         # Value for deletion not present
         if del_target is None:
             return
+
         # is root
         if self.root.data == del_target.data:
-            self._splice(self.root, del_child_dir, del_target)
+            self._splice(None, None, del_target)
         else:
             self._splice(del_parent, del_child_dir, del_target)
 
@@ -83,8 +84,16 @@ class BinarySearchTree:
         else:
             # Next highest value will not have a right child
             subst_parent, substitute = self._get_next_highest_below(del_target)
+
             del_target.data = substitute.data
-            subst_parent.right = substitute.left
+            # Nodes are adjacent and left child lacks right; simple promote
+            if subst_parent == del_target and del_parent:
+                del_parent.left = substitute
+            elif subst_parent == del_target:
+                self.root.left = substitute.left
+            else:
+                subst_parent.right = substitute.left
+
             self.size -= 1
 
     def _update_del_parent(self, del_child_dir, del_parent, new_val):
@@ -99,8 +108,6 @@ class BinarySearchTree:
         """
 
         # direction of `None` means child is root
-        if new_val is not None:
-            new_val = new_val.data
         if del_child_dir is None:
             self.root = new_val
         elif del_child_dir == 'left':
@@ -123,7 +130,11 @@ class BinarySearchTree:
         """
 
         current = target
-        parent, current = current, current.left
+        if current.has_left():
+            parent, current = current, current.left
+        else:
+            return None, None
+
         # Descend to furthest right node; highest value less than target
         while current.has_right():
             parent, current = current, current.right
@@ -236,11 +247,11 @@ class BinarySearchTree:
         factor = self._left_height(current) - self._right_height(current)
         while factor < -1 or factor > 1:
             if factor < -1:
-                self._rotate(current, 'ccw') 	# counter clockwise
+                self._rotate(current, 'ccw')     # counter clockwise
                 current = current.right
                 factor += 1
             elif factor > 1:
-                self._rotate(current, 'cw')		# clockwise
+                self._rotate(current, 'cw')        # clockwise
                 current = current.left
                 factor -= 1
 
@@ -321,7 +332,7 @@ t.insert(5)
 t.insert(11)
 t.insert(4)
 t.insert(35)
-t.insert(3)
+t.insert(2)
 t.insert(5)
 t.insert(19)
 t.insert(-2)
@@ -352,8 +363,8 @@ print t.inOrder()
 print t.root.data
 print t.root.left.data
 print t.root.right.data
-t.delete(3)
-print 'Deleted 3 - two branches'
+t.delete(2)
+print 'Deleted 2 - two branches'
 print t.inOrder()
 t.delete(5)
 print 'Deleted 5 - root'
@@ -371,7 +382,7 @@ print target.data
 subst_parent, subst = t._get_next_highest_below(target)
 print subst_parent.data
 print subst.data
-t.insert(3)
+t.insert(2)
 print 'Added 3'
 print t.inOrder()
 t.insert(8)
