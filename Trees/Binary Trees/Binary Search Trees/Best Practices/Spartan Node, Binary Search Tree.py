@@ -43,7 +43,8 @@ class BinarySearchTree:
         val - value to be deleted from binary search tree.
         """
 
-        del_parent, del_child_dir, del_target = self._get_target_anc_dtls(val)
+        del_parent, del_child_dir, del_target = self._get_target_and_par_dtls(
+            val)
         # Value for deletion not present
         if del_target is None:
             return
@@ -141,7 +142,7 @@ class BinarySearchTree:
 
         return parent, current
 
-    def _get_target_anc_dtls(self, val):
+    def _get_target_and_par_dtls(self, val):
         if self.root.data == val:
             return None, None, self.root
         else:
@@ -241,11 +242,17 @@ class BinarySearchTree:
                     self.balance_node(self.root)
                     done = 1
 
+    def node_bal_factor(self, val):
+        parent, dirn, target = self._get_target_and_par_dtls(val)
+        return self._left_height(target) - self._right_height(target)
+
     def balance_node(self, node):
         """Balances the subtree under `node`."""
         current = node
         factor = self._left_height(current) - self._right_height(current)
         while factor < -1 or factor > 1:
+            print factor
+            print current.data
             if factor < -1:
                 self._rotate(current, 'ccw')     # counter clockwise
                 current = current.right
@@ -259,7 +266,7 @@ class BinarySearchTree:
         is_root_node = False
         if node == self.root:
             is_root_node = True
-        parent, dirn, target = self._get_target_anc_dtls(node.data)
+        parent, dirn, target = self._get_target_and_par_dtls(node.data)
         if rotDir == 'ccw':
             newRoot = node.right
             node.right = newRoot.left
@@ -270,14 +277,12 @@ class BinarySearchTree:
             newRoot.right = node
         # If pivotal node is tree's root, update root value
         if is_root_node:
-            print "yes"
             self.root = newRoot
         else:
             if dirn == 'left':
                 parent.left = newRoot
             elif dirn == 'right':
                 parent.right = newRoot
-            print parent.right.data
 
     def _left_height(self, node):
         height = 0
@@ -350,7 +355,7 @@ print t.root.data
 print t.size
 print t.root.right.data
 print t.root.right.right.data
-parent, direction, target = t._get_target_anc_dtls(8)
+parent, direction, target = t._get_target_and_par_dtls(8)
 print parent.data
 print direction
 print target.data
@@ -372,10 +377,10 @@ print t.root.data
 print t.root.left.data
 print t.root.right.data
 print t.inOrder()
-parent, direction, target = t._get_target_anc_dtls(8)
+parent, direction, target = t._get_target_and_par_dtls(8)
 print parent
 print target
-parent, direction, target = t._get_target_anc_dtls(7)
+parent, direction, target = t._get_target_and_par_dtls(7)
 print parent.data
 print direction
 print target.data
@@ -392,16 +397,44 @@ t.insert(5)
 print 'Added 5'
 print t.inOrder()
 print "Begin t.root.left balancing"
-print t.root.left.data
+print "Bal Factor root.left: " + str(t.node_bal_factor(t.root.left.data))
+print "root.left.data: " + str(t.root.left.data)
 t.balance_node(t.root.left)
-print t.root.left.data
+print "Bal Factor root.left: " + str(t.node_bal_factor(t.root.left.data))
+print "root.left.data: " + str(t.root.left.data)
 print t.inOrder()
 print "Begin t.root.right balancing"
 print t.root.right.data
+print "Bal Factor root.right: " + str(t.node_bal_factor(t.root.right.data))
 t.balance_node(t.root.right)
 print t.root.right.data
+print "Bal Factor root.right: " + str(t.node_bal_factor(t.root.right.data))
 print t.inOrder()
-print t.root.data
+print "Begin t.root.left balancing"
+print "Bal Factor root: " + str(t.node_bal_factor(t.root.data))
 t.balance_root()
 print t.inOrder()
+print "Bal Factor root: " + str(t.node_bal_factor(t.root.data))
 print t.root.data
+print "RESET"
+t = BinarySearchTree()
+t.insert(1)
+t.insert(2)
+t.insert(3)
+t.insert(4)
+t.insert(5)
+t.insert(6)
+t.insert(7)
+t.insert(8)
+t.insert(9)
+t.insert(10)
+t.insert(11)
+t.insert(12)
+t.insert(13)
+t.insert(14)
+t.insert(15)
+t.insert(16)
+t.insert(17)
+t.balance_tree()
+print t.root.data
+print t.inOrder()
