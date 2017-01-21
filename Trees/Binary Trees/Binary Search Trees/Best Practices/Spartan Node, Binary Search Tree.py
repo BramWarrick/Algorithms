@@ -1,3 +1,10 @@
+"""
+This is intended to work in the least memory intensive way. Nodes do not have
+a pointer to their parent, which adds difficulty. Further, recursion is
+avoided at every step - only iterative processes are used.
+"""
+
+
 class BinarySearchTree:
 
     def __init__(self):
